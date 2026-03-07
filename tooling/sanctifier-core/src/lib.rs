@@ -1000,6 +1000,20 @@ impl Analyzer {
         caller: &str,
         file_path: &str,
     ) -> Vec<ContractCallEdge> {
+        let file = match parse_str::<File>(source) {
+            Ok(f) => f,
+            Err(_) => return vec![],
+        };
+
+        let mut visitor = InvokeContractVisitor {
+            edges: Vec::new(),
+            caller: caller.to_string(),
+            file_path: file_path.to_string(),
+        };
+        visitor.visit_file(&file);
+        visitor.edges
+    }
+
     // ── Storage key collision detection (NEW) ─────────────────────────────────
 
     /// Scans for potential storage key collisions by analyzing constants,
@@ -1030,13 +1044,6 @@ impl Analyzer {
             Err(_) => return vec![],
         };
 
-        let mut visitor = InvokeContractVisitor {
-            edges: Vec::new(),
-            caller: caller.to_string(),
-            file_path: file_path.to_string(),
-        };
-        visitor.visit_file(&file);
-        visitor.edges
         let mut visitor = UnhandledResultVisitor {
             issues: Vec::new(),
             current_fn: None,
