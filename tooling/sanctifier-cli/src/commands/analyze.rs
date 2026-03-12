@@ -389,9 +389,6 @@ pub fn exec(args: AnalyzeArgs) -> anyhow::Result<()> {
         }
     }
 
-        }
-    }
-
     if !event_issues.is_empty() {
         println!("\n{} Found Event Consistency/Optimization issues!", "⚠️".yellow());
         for issue in &event_issues {
