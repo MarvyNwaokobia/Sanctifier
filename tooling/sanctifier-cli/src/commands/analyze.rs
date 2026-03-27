@@ -6,7 +6,7 @@ use clap::{Args, ValueEnum};
 use colored::*;
 use rayon::prelude::*;
 use sanctifier_core::finding_codes;
-use sanctifier_core::{Analyzer, SanctifyConfig, SizeWarningLevel};
+use sanctifier_core::{Analyzer, SanctifyConfig};
 use serde_json;
 use std::fs;
 use std::path::{Path, PathBuf};
@@ -32,14 +32,18 @@ impl SeverityLevel {
             SeverityLevel::Low => "low",
         }
     }
+}
 
-    pub fn from_str(s: &str) -> Option<Self> {
+impl std::str::FromStr for SeverityLevel {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s.to_lowercase().as_str() {
-            "critical" => Some(SeverityLevel::Critical),
-            "high" => Some(SeverityLevel::High),
-            "medium" => Some(SeverityLevel::Medium),
-            "low" => Some(SeverityLevel::Low),
-            _ => None,
+            "critical" => Ok(SeverityLevel::Critical),
+            "high" => Ok(SeverityLevel::High),
+            "medium" => Ok(SeverityLevel::Medium),
+            "low" => Ok(SeverityLevel::Low),
+            _ => Err(format!("Invalid severity level: {}", s)),
         }
     }
 }
@@ -105,7 +109,6 @@ pub(crate) struct FileAnalysisResult {
 // ── Entry point ──────────────────────────────────────────────────────────────
 
 pub fn exec(args: AnalyzeArgs) -> anyhow::Result<()> {
-    let path = &args.path;
     let mut path = args.path.clone();
 
     // Normalize path separators: ensure backslashes provided by users familiar with Windows
@@ -236,7 +239,7 @@ pub fn exec(args: AnalyzeArgs) -> anyhow::Result<()> {
 
     // ── Phase 3: sort by file path for deterministic output ──────────────
     results.sort_by(|a, b| a.file_path.cmp(&b.file_path));
-    let files_analyzed = total_files;
+    let _files_analyzed = total_files;
 
     // ── Phase 4: merge into flat vectors ─────────────────────────────────
     let mut collisions: Vec<sanctifier_core::StorageCollisionIssue> = Vec::new();
@@ -361,7 +364,7 @@ pub fn exec(args: AnalyzeArgs) -> anyhow::Result<()> {
         }
 
         for vuln in &vuln_matches {
-            if let Some(sev) = SeverityLevel::from_str(&vuln.severity) {
+            if let Ok(sev) = vuln.severity.parse::<SeverityLevel>() {
                 consider(sev);
             }
         }
@@ -395,7 +398,7 @@ pub fn exec(args: AnalyzeArgs) -> anyhow::Result<()> {
         warn!(target: "sanctifier", error = %err, "Failed to initialize webhook client");
     }
 
-    let duration_ms = start.elapsed().as_millis() as u64;
+    let _duration_ms = start.elapsed().as_millis() as u64;
     let _rules_executed: usize = 6;
 
     if is_json {

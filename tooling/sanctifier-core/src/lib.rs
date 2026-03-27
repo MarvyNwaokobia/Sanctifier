@@ -1175,7 +1175,7 @@ impl Analyzer {
                         rule_name: rule.name.clone(),
                         line: line_num,
                         snippet: line.trim().to_string(),
-                        severity: rule.severity.clone(),
+                        severity: rule.severity,
                     });
                 }
             }
@@ -3157,11 +3157,13 @@ impl MyContract {
 }
 
 impl SmtInvariantIssue {
+    /// Returns the severity level of this SMT invariant violation.
     pub fn severity(&self) -> crate::finding_codes::FindingSeverity {
         crate::finding_codes::FindingSeverity::Critical
     }
 }
 impl SizeWarning {
+    /// Returns the severity level of this ledger size warning.
     pub fn severity(&self) -> crate::finding_codes::FindingSeverity {
         if self.level == SizeWarningLevel::ExceedsLimit {
             crate::finding_codes::FindingSeverity::Critical
@@ -3171,6 +3173,7 @@ impl SizeWarning {
     }
 }
 impl PanicIssue {
+    /// Returns the severity level of this panic issue.
     pub fn severity(&self) -> crate::finding_codes::FindingSeverity {
         if self.issue_type == "panic!" || self.issue_type == "unwrap" || self.issue_type == "expect"
         {
@@ -3181,41 +3184,50 @@ impl PanicIssue {
     }
 }
 impl UnsafePattern {
+    /// Returns the severity level of this unsafe pattern.
     pub fn severity(&self) -> crate::finding_codes::FindingSeverity {
         crate::finding_codes::FindingSeverity::High
     }
 }
 impl UpgradeFinding {
+    /// Returns the severity level of this upgrade finding.
     pub fn severity(&self) -> crate::finding_codes::FindingSeverity {
         crate::finding_codes::FindingSeverity::High
     }
 }
 impl ArithmeticIssue {
+    /// Returns the severity level of this arithmetic issue.
     pub fn severity(&self) -> crate::finding_codes::FindingSeverity {
         crate::finding_codes::FindingSeverity::High
     }
 }
 impl StorageCollisionIssue {
+    /// Returns the severity level of this storage collision issue.
     pub fn severity(&self) -> crate::finding_codes::FindingSeverity {
         crate::finding_codes::FindingSeverity::High
     }
 }
 impl EventIssue {
+    /// Returns the severity level of this event issue.
     pub fn severity(&self) -> crate::finding_codes::FindingSeverity {
         crate::finding_codes::FindingSeverity::High
     }
 }
 impl UnhandledResultIssue {
+    /// Returns the severity level of this unhandled result issue.
     pub fn severity(&self) -> crate::finding_codes::FindingSeverity {
         crate::finding_codes::FindingSeverity::High
     }
 }
 
+/// An authentication gap issue detected in a contract function.
 #[derive(Debug, serde::Serialize, Clone, PartialEq)]
 pub struct AuthGapIssue {
+    /// The name of the function missing authentication.
     pub function_name: String,
 }
 impl AuthGapIssue {
+    /// Returns the severity level of this authentication gap.
     pub fn severity(&self) -> crate::finding_codes::FindingSeverity {
         crate::finding_codes::FindingSeverity::Critical
     }
