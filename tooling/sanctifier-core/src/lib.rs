@@ -1942,7 +1942,7 @@ mod tests {
         "#;
         let gaps = analyzer.scan_auth_gaps(source);
         assert_eq!(gaps.len(), 1);
-        assert_eq!(gaps[0], "set_data");
+        assert_eq!(gaps[0].function_name, "set_data");
     }
 
     #[test]
@@ -1972,7 +1972,8 @@ mod tests {
         "#;
 
         let gaps = analyzer.scan_auth_gaps(source);
-        assert_eq!(gaps, vec!["transfer".to_string()]);
+        assert_eq!(gaps.len(), 1);
+        assert_eq!(gaps[0].function_name, "transfer");
     }
 
     #[test]
@@ -1995,7 +1996,8 @@ mod tests {
         "#;
 
         let gaps = analyzer.scan_auth_gaps(source);
-        assert_eq!(gaps, vec!["forward".to_string()]);
+        assert_eq!(gaps.len(), 1);
+        assert_eq!(gaps[0].function_name, "forward");
     }
 
     #[test]
@@ -2022,7 +2024,8 @@ mod tests {
         "#;
 
         let gaps = analyzer.scan_auth_gaps(source);
-        assert_eq!(gaps, vec!["reset_admin".to_string()]);
+        assert_eq!(gaps.len(), 1);
+        assert_eq!(gaps[0].function_name, "reset_admin");
     }
 
     #[test]
@@ -2044,7 +2047,8 @@ mod tests {
         "#;
 
         let gaps = analyzer.scan_auth_gaps(source);
-        assert_eq!(gaps, vec!["forward_transfer".to_string()]);
+        assert_eq!(gaps.len(), 1);
+        assert_eq!(gaps[0].function_name, "forward_transfer");
     }
 
     #[test]
@@ -2281,7 +2285,7 @@ mod tests {
                 CustomRule {
                     name: "no_unsafe".to_string(),
                     pattern: "unsafe".to_string(),
-                    severity: Rulecrate::finding_codes::FindingSeverity::Critical,
+                    severity: crate::finding_codes::FindingSeverity::Critical,
                 },
                 CustomRule {
                     name: "todo_comment".to_string(),
@@ -2310,7 +2314,7 @@ mod tests {
         assert_eq!(todo_match.severity, RuleSeverity::Info);
 
         let unsafe_match = matches.iter().find(|m| m.rule_name == "no_unsafe").unwrap();
-        assert_eq!(unsafe_match.severity, Rulecrate::finding_codes::FindingSeverity::Critical);
+        assert_eq!(unsafe_match.severity, crate::finding_codes::FindingSeverity::Critical);
     }
 
     #[test]
