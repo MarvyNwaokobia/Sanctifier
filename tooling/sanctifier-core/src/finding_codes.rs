@@ -55,6 +55,16 @@ pub const ADMIN_TRUST_RISK: &str = "S014";
 pub const HARDCODED_SECRET_KEY: &str = "S015";
 /// Integer truncation (cast) or unchecked slice/array indexing.
 pub const TRUNCATION_BOUNDS: &str = "S016";
+/// contractimport signature does not match actual implemented workspace source.
+pub const CONTRACTIMPORT_MISMATCH: &str = "S017";
+/// Use of PRNG without proper seeding in state-critical code.
+pub const UNSAFE_PRNG: &str = "S018";
+/// Unchecked return value from external Soroban cross-contract call.
+pub const UNCHECKED_EXTERNAL_CALL: &str = "S019";
+/// Missing event emission for privileged state changes.
+pub const MISSING_STATE_EVENT: &str = "S020";
+/// Per-user or large dataset stored in Instance storage instead of Persistent.
+pub const INSTANCE_STORAGE_MISUSE: &str = "S021";
 
 /// A single finding-code entry with machine-readable code, category, and
 /// human-readable description.
@@ -157,6 +167,31 @@ pub fn all_finding_codes() -> Vec<FindingCode> {
             category: "truncation_bounds",
             description: "Integer truncation cast or unchecked array/slice indexing",
         },
+        FindingCode {
+            code: CONTRACTIMPORT_MISMATCH,
+            category: "integration",
+            description: "contractimport signature does not match actual implemented workspace source",
+        },
+        FindingCode {
+            code: UNSAFE_PRNG,
+            category: "randomness",
+            description: "Use of PRNG without proper seeding in state-critical code that could lead to predictable randomness",
+        },
+        FindingCode {
+            code: UNCHECKED_EXTERNAL_CALL,
+            category: "external_calls",
+            description: "Result from cross-contract call is not checked, which may leave state inconsistent",
+        },
+        FindingCode {
+            code: MISSING_STATE_EVENT,
+            category: "events",
+            description: "Privileged state change (admin, pause, upgrade) without event emission breaks off-chain data integrity",
+        },
+        FindingCode {
+            code: INSTANCE_STORAGE_MISUSE,
+            category: "storage_type",
+            description: "Per-user or large dataset stored in Instance storage instead of Persistent, causing ledger entry bloat",
+        },
     ]
 }
 
@@ -186,5 +221,10 @@ mod tests {
         assert!(codes.iter().any(|c| c.code == SEP41_INTERFACE_DEVIATION));
         assert!(codes.iter().any(|c| c.code == HARDCODED_SECRET_KEY));
         assert!(codes.iter().any(|c| c.code == TRUNCATION_BOUNDS));
+        assert!(codes.iter().any(|c| c.code == CONTRACTIMPORT_MISMATCH));
+        assert!(codes.iter().any(|c| c.code == UNSAFE_PRNG));
+        assert!(codes.iter().any(|c| c.code == UNCHECKED_EXTERNAL_CALL));
+        assert!(codes.iter().any(|c| c.code == MISSING_STATE_EVENT));
+        assert!(codes.iter().any(|c| c.code == INSTANCE_STORAGE_MISUSE));
     }
 }
